@@ -24,12 +24,8 @@ export class ProductsController {
   }
 
   @Get(':id')
-  detail(@Param() { id }, @Res() response): Product | string {
+  detail(@Param() { id }, @Res() response): Product {
     const product = this.productsService.findById(id);
-
-    if (typeof product === 'string') {
-      return response.status(404).json({ message: product });
-    }
 
     return response.json(product);
   }
@@ -38,17 +34,15 @@ export class ProductsController {
   create(
     @Body() { description, brand, price, amount, barcode },
     @Res() response,
-  ): string {
-    const productCreated = this.productsService.create({
+  ) {
+    this.productsService.create({
       description,
       brand,
       price,
       amount,
       barcode,
     });
-    if (!productCreated) {
-      response.status(400).json({ message: 'Product not created' });
-    }
+
     return response.status(204).send();
   }
 
@@ -58,7 +52,7 @@ export class ProductsController {
     @Param() { id },
     @Body() { description, brand, price, amount, barcode },
     @Res() response,
-  ): string {
+  ) {
     this.productsService.update({
       id,
       description,

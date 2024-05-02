@@ -30,7 +30,7 @@ export class ProductsService {
     return this.products;
   }
 
-  findById(id: number): Product | string {
+  findById(id: number): Product {
     const product = this.products.find((product) => product.id === +id);
 
     if (!product) {
