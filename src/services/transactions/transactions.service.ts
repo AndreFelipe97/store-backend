@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Transaction } from 'src/entities/transactions.entity';
+import { transactionNotFound } from 'src/messages/transactions.messages';
 
 @Injectable()
 export class TransactionsService {
@@ -24,7 +25,7 @@ export class TransactionsService {
     );
 
     if (!transaction) {
-      throw new NotFoundException('Transaction not found');
+      throw new NotFoundException(transactionNotFound);
     }
 
     return transaction;
@@ -43,7 +44,7 @@ export class TransactionsService {
     );
 
     if (transactionIndex < 0) {
-      throw new NotFoundException('Transaction not found');
+      throw new NotFoundException(transactionNotFound);
     }
 
     this.transactions[transactionIndex] = {
@@ -64,7 +65,7 @@ export class TransactionsService {
     );
 
     if (transactionIndex < 0) {
-      throw new NotFoundException('Transaction not found');
+      throw new NotFoundException(transactionNotFound);
     }
 
     this.transactions.splice(transactionIndex, 1);

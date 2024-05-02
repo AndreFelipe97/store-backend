@@ -4,6 +4,10 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Product } from 'src/entities/products.entity';
+import {
+  productBarCodeExists,
+  productNotFound,
+} from 'src/messages/products.messages';
 
 @Injectable()
 export class ProductsService {
@@ -34,7 +38,7 @@ export class ProductsService {
     const product = this.products.find((product) => product.id === +id);
 
     if (!product) {
-      throw new NotFoundException('Product not found');
+      throw new NotFoundException(productNotFound);
     }
 
     return product;
@@ -47,7 +51,7 @@ export class ProductsService {
     );
 
     if (barcodeExists) {
-      throw new BadRequestException('Barcode already exists');
+      throw new BadRequestException(productBarCodeExists);
     }
 
     this.products.push({ id, description, brand, price, amount, barcode });
@@ -64,11 +68,11 @@ export class ProductsService {
     );
 
     if (productIndex < 0) {
-      throw new NotFoundException('Product not found');
+      throw new NotFoundException(productNotFound);
     }
 
     if (barcodeExists && this.products[productIndex].barcode !== barcode) {
-      throw new BadRequestException('Barcode already exists');
+      throw new BadRequestException(productBarCodeExists);
     }
 
     this.products[productIndex] = {
@@ -88,7 +92,7 @@ export class ProductsService {
     );
 
     if (productIndex < 0) {
-      throw new NotFoundException('Product not found');
+      throw new NotFoundException(productNotFound);
     }
 
     this.products.splice(productIndex, 1);
