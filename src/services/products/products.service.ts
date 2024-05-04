@@ -77,13 +77,11 @@ export class ProductsService {
 
     this.products[productIndex] = {
       id,
-      description: description
-        ? description
-        : this.products[productIndex].description,
-      brand: brand ? brand : this.products[productIndex].brand,
-      price: price ? price : this.products[productIndex].price,
-      amount: amount ? amount : this.products[productIndex].amount,
-      barcode: barcode ? barcode : this.products[productIndex].barcode,
+      description: description || this.products[productIndex].description,
+      brand: brand || this.products[productIndex].brand,
+      price: price || this.products[productIndex].price,
+      amount: amount || this.products[productIndex].amount,
+      barcode: barcode || this.products[productIndex].barcode,
     };
     return true;
   }
