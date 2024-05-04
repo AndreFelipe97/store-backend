@@ -35,7 +35,7 @@ export class ProductsService {
   }
 
   findById(id: number): Product {
-    const product = this.products.find((product) => product.id === +id);
+    const product = this.products.find((product) => product.id === id);
 
     if (!product) {
       throw new NotFoundException(productNotFound);
@@ -76,19 +76,21 @@ export class ProductsService {
     }
 
     this.products[productIndex] = {
-      id: +id,
-      description,
-      brand,
-      price,
-      amount,
-      barcode,
+      id,
+      description: description
+        ? description
+        : this.products[productIndex].description,
+      brand: brand ? brand : this.products[productIndex].brand,
+      price: price ? price : this.products[productIndex].price,
+      amount: amount ? amount : this.products[productIndex].amount,
+      barcode: barcode ? barcode : this.products[productIndex].barcode,
     };
     return true;
   }
 
   delete(id: number): boolean {
     const productIndex = this.products.findIndex(
-      (product) => product.id === +id,
+      (product) => product.id === id,
     );
 
     if (productIndex < 0) {

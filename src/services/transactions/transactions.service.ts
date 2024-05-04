@@ -21,7 +21,7 @@ export class TransactionsService {
 
   findById(id: number): Transaction {
     const transaction = this.transactions.find(
-      (transaction) => transaction.id === +id,
+      (transaction) => transaction.id === id,
     );
 
     if (!transaction) {
@@ -40,7 +40,7 @@ export class TransactionsService {
 
   update({ id, description, valor, category, type, date }): boolean {
     const transactionIndex = this.transactions.findIndex(
-      (transaction) => transaction.id === +id,
+      (transaction) => transaction.id === id,
     );
 
     if (transactionIndex < 0) {
@@ -48,7 +48,7 @@ export class TransactionsService {
     }
 
     this.transactions[transactionIndex] = {
-      id: +id,
+      id,
       description,
       valor,
       category,
@@ -61,7 +61,7 @@ export class TransactionsService {
 
   delete(id: number): boolean {
     const transactionIndex = this.transactions.findIndex(
-      (transaction) => transaction.id === +id,
+      (transaction) => transaction.id === id,
     );
 
     if (transactionIndex < 0) {

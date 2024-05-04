@@ -23,7 +23,7 @@ export class TransactionsController {
   }
 
   @Get(':id')
-  detail(@Param() { id }, @Res() response): Transaction {
+  detail(@Param('id') id: number, @Res() response): Transaction {
     const transaction = this.transactionsServices.findById(id);
 
     return response.json(transaction);
@@ -47,7 +47,7 @@ export class TransactionsController {
 
   @Put(':id')
   update(
-    @Param() { id },
+    @Param('id') id: number,
     @Body() { description, valor, category, type, date },
     @Res() response,
   ): string {
@@ -64,7 +64,7 @@ export class TransactionsController {
   }
 
   @Delete(':id')
-  delete(@Param() { id }, @Res() response): string {
+  delete(@Param('id') id: number, @Res() response): string {
     this.transactionsServices.delete(id);
 
     return response.status(204).send();

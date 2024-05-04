@@ -3,12 +3,12 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode,
   Param,
   Post,
   Put,
   Res,
 } from '@nestjs/common';
+import { CreateProductsDto, UpdateProductsDto } from 'src/dtos/Dto';
 import { Product } from 'src/entities/products.entity';
 import { ProductsService } from 'src/services/products/products.service';
 
@@ -24,7 +24,7 @@ export class ProductsController {
   }
 
   @Get(':id')
-  detail(@Param() { id }, @Res() response): Product {
+  detail(@Param('id') id: number, @Res() response): Product {
     const product = this.productsService.findById(id);
 
     return response.json(product);
@@ -32,7 +32,7 @@ export class ProductsController {
 
   @Post()
   create(
-    @Body() { description, brand, price, amount, barcode },
+    @Body() { description, brand, price, amount, barcode }: CreateProductsDto,
     @Res() response,
   ) {
     this.productsService.create({
@@ -46,11 +46,10 @@ export class ProductsController {
     return response.status(204).send();
   }
 
-  @HttpCode(204)
   @Put(':id')
   update(
-    @Param() { id },
-    @Body() { description, brand, price, amount, barcode },
+    @Param('id') id: number,
+    @Body() { description, brand, price, amount, barcode }: UpdateProductsDto,
     @Res() response,
   ) {
     this.productsService.update({
@@ -66,7 +65,7 @@ export class ProductsController {
   }
 
   @Delete(':id')
-  delete(@Param() { id }, @Res() response): string {
+  delete(@Param('id') id: number, @Res() response): string {
     const productDeleted = this.productsService.delete(id);
 
     if (!productDeleted) {
