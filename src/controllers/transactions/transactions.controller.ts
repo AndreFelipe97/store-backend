@@ -8,6 +8,7 @@ import {
   Put,
   Res,
 } from '@nestjs/common';
+import { CreateTransactionsDto, UpdateTransactionsDto } from 'src/dtos/Dto';
 import { Transaction } from 'src/entities/transactions.entity';
 import { TransactionsService } from 'src/services/transactions/transactions.service';
 
@@ -31,12 +32,12 @@ export class TransactionsController {
 
   @Post()
   create(
-    @Body() { description, valor, category, type, date },
+    @Body() { description, value, category, type, date }: CreateTransactionsDto,
     @Res() response,
   ): string {
     this.transactionsServices.create({
       description,
-      valor,
+      value,
       category,
       type,
       date,
@@ -48,13 +49,13 @@ export class TransactionsController {
   @Put(':id')
   update(
     @Param('id') id: number,
-    @Body() { description, valor, category, type, date },
+    @Body() { description, value, category, type, date }: UpdateTransactionsDto,
     @Res() response,
   ): string {
     this.transactionsServices.update({
       id,
       description,
-      valor,
+      value,
       category,
       type,
       date,

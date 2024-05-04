@@ -8,10 +8,10 @@ export class TransactionsService {
     {
       id: 1,
       description: 'Coca-cola',
-      valor: 800,
+      value: 800,
       category: 'Refrigerantes',
       type: 'without',
-      date: '2/5/2024',
+      date: new Date(),
     },
   ];
 
@@ -31,14 +31,14 @@ export class TransactionsService {
     return transaction;
   }
 
-  create({ description, valor, category, type, date }): boolean {
+  create({ description, value, category, type, date }): boolean {
     const id = this.transactions.length + 1;
 
-    this.transactions.push({ id, description, valor, category, type, date });
+    this.transactions.push({ id, description, value, category, type, date });
     return true;
   }
 
-  update({ id, description, valor, category, type, date }): boolean {
+  update({ id, description, value, category, type, date }): boolean {
     const transactionIndex = this.transactions.findIndex(
       (transaction) => transaction.id === id,
     );
@@ -49,11 +49,12 @@ export class TransactionsService {
 
     this.transactions[transactionIndex] = {
       id,
-      description,
-      valor,
-      category,
-      type,
-      date,
+      description:
+        description || this.transactions[transactionIndex].description,
+      value: value || this.transactions[transactionIndex].value,
+      category: category || this.transactions[transactionIndex].category,
+      type: type || this.transactions[transactionIndex].type,
+      date: date || this.transactions[transactionIndex].date,
     };
 
     return true;

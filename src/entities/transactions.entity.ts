@@ -1,8 +1,8 @@
 export class Transaction {
   id: number;
   description: string;
-  valor: number;
+  value: number;
   category: string;
   type: string;
-  date: string;
+  date: Date;
 }
