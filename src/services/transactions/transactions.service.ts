@@ -10,7 +10,7 @@ export class TransactionsService {
       description: 'Coca-cola',
       value: 800,
       category: 'Refrigerantes',
-      type: 'without',
+      type: 'outcome',
       date: new Date(),
     },
   ];

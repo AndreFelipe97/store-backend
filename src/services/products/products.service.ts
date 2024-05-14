@@ -3,39 +3,27 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from 'src/entities/products.entity';
 import {
   productBarCodeExists,
   productNotFound,
 } from 'src/messages/products.messages';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ProductsService {
-  private products: Product[] = [
-    {
-      id: 1,
-      description: 'Arroz',
-      brand: 'Fortaleza',
-      price: 10.5,
-      amount: 20,
-      barcode: '1111111111',
-    },
-    {
-      id: 2,
-      description: 'Feijão',
-      brand: 'Fortaleza',
-      price: 12,
-      amount: 10,
-      barcode: '1111111112',
-    },
-  ];
+  constructor(
+    @InjectRepository(Product)
+    private readonly productRepository: Repository<Product>,
+  ) {}
 
-  findAll(): Product[] {
-    return this.products;
+  async findAll(): Promise<Product[]> {
+    return await this.productRepository.find();
   }
 
-  findById(id: number): Product {
-    const product = this.products.find((product) => product.id === id);
+  async findById(id: number): Promise<Product> {
+    const product = this.productRepository.findOne({ where: { id } });
 
     if (!product) {
       throw new NotFoundException(productNotFound);
@@ -44,58 +32,77 @@ export class ProductsService {
     return product;
   }
 
-  create({ description, brand, price, amount, barcode }): boolean {
-    const id = this.products.length + 1;
-    const barcodeExists = this.products.some(
-      (product) => product.barcode === barcode,
-    );
+  async create({
+    description,
+    brand,
+    price,
+    amount,
+    barcode,
+  }): Promise<boolean> {
+    const barcodeExists = this.productRepository.findOne({
+      where: { barcode },
+    });
 
     if (barcodeExists) {
       throw new BadRequestException(productBarCodeExists);
     }
 
-    this.products.push({ id, description, brand, price, amount, barcode });
+    const product = this.productRepository.create({
+      description,
+      brand,
+      price,
+      amount,
+      barcode,
+    });
+
+    await this.productRepository.save(product);
+
     return true;
   }
 
-  update({ id, description, brand, price, amount, barcode }): boolean {
-    const productIndex = this.products.findIndex(
-      (product) => product.id === +id,
-    );
+  async update({
+    id,
+    description,
+    brand,
+    price,
+    amount,
+    barcode,
+  }): Promise<boolean> {
+    const product = await this.productRepository.preload({
+      id,
+      description,
+      brand,
+      price,
+      amount,
+      barcode,
+    });
 
-    const barcodeExists = this.products.some(
-      (product) => product.barcode === barcode,
-    );
+    const barcodeExists = await this.productRepository.findOne({
+      where: { barcode },
+    });
 
-    if (productIndex < 0) {
+    if (!product) {
       throw new NotFoundException(productNotFound);
     }
 
-    if (barcodeExists && this.products[productIndex].barcode !== barcode) {
+    if (barcodeExists && product.barcode !== barcode) {
       throw new BadRequestException(productBarCodeExists);
     }
 
-    this.products[productIndex] = {
-      id,
-      description: description || this.products[productIndex].description,
-      brand: brand || this.products[productIndex].brand,
-      price: price || this.products[productIndex].price,
-      amount: amount || this.products[productIndex].amount,
-      barcode: barcode || this.products[productIndex].barcode,
-    };
+    this.productRepository.save(product);
+
     return true;
   }
 
-  delete(id: number): boolean {
-    const productIndex = this.products.findIndex(
-      (product) => product.id === id,
-    );
+  async delete(id: number): Promise<boolean> {
+    const product = await this.productRepository.findOne({ where: { id } });
 
-    if (productIndex < 0) {
+    if (!product) {
       throw new NotFoundException(productNotFound);
     }
 
-    this.products.splice(productIndex, 1);
+    await this.productRepository.remove(product);
+
     return true;
   }
 }

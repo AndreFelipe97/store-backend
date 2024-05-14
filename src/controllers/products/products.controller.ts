@@ -17,7 +17,7 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Get()
-  index(): Product[] {
+  index(): Promise<Product[]> {
     const products = this.productsService.findAll();
 
     return products;
