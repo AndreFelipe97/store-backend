@@ -23,13 +23,13 @@ export class ProductsService {
   }
 
   async findById(id: number): Promise<Product> {
-    const product = this.productRepository.findOne({ where: { id } });
+    const product = await this.productRepository.findOne({ where: { id } });
 
     if (!product) {
       throw new NotFoundException(productNotFound);
     }
 
-    return product;
+    return { ...product };
   }
 
   async create({
@@ -39,7 +39,7 @@ export class ProductsService {
     amount,
     barcode,
   }): Promise<boolean> {
-    const barcodeExists = this.productRepository.findOne({
+    const barcodeExists = await this.productRepository.findOne({
       where: { barcode },
     });
 
@@ -89,7 +89,7 @@ export class ProductsService {
       throw new BadRequestException(productBarCodeExists);
     }
 
-    this.productRepository.save(product);
+    await this.productRepository.save(product);
 
     return true;
   }

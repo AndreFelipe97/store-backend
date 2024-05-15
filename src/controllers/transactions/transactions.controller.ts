@@ -17,25 +17,25 @@ export class TransactionsController {
   constructor(private readonly transactionsServices: TransactionsService) {}
 
   @Get()
-  indexedDB(): Transaction[] {
-    const transactions = this.transactionsServices.findAll();
+  async indexedDB(): Promise<Transaction[]> {
+    const transactions = await this.transactionsServices.findAll();
 
     return transactions;
   }
 
   @Get(':id')
-  detail(@Param('id') id: number, @Res() response): Transaction {
-    const transaction = this.transactionsServices.findById(id);
+  async detail(@Param('id') id: number): Promise<Transaction> {
+    const transaction = await this.transactionsServices.findById(id);
 
-    return response.json(transaction);
+    return transaction;
   }
 
   @Post()
-  create(
+  async create(
     @Body() { description, value, category, type, date }: CreateTransactionsDto,
     @Res() response,
-  ): string {
-    this.transactionsServices.create({
+  ) {
+    await this.transactionsServices.create({
       description,
       value,
       category,
@@ -47,12 +47,12 @@ export class TransactionsController {
   }
 
   @Put(':id')
-  update(
+  async update(
     @Param('id') id: number,
     @Body() { description, value, category, type, date }: UpdateTransactionsDto,
     @Res() response,
-  ): string {
-    this.transactionsServices.update({
+  ) {
+    await this.transactionsServices.update({
       id,
       description,
       value,
@@ -65,8 +65,8 @@ export class TransactionsController {
   }
 
   @Delete(':id')
-  delete(@Param('id') id: number, @Res() response): string {
-    this.transactionsServices.delete(id);
+  async delete(@Param('id') id: number, @Res() response) {
+    await this.transactionsServices.delete(id);
 
     return response.status(204).send();
   }

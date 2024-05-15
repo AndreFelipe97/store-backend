@@ -1,28 +1,24 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Transaction } from 'src/entities/transactions.entity';
 import { transactionNotFound } from 'src/messages/transactions.messages';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class TransactionsService {
-  private transactions: Transaction[] = [
-    {
-      id: 1,
-      description: 'Coca-cola',
-      value: 800,
-      category: 'Refrigerantes',
-      type: 'outcome',
-      date: new Date(),
-    },
-  ];
+  constructor(
+    @InjectRepository(Transaction)
+    private readonly transactionRepository: Repository<Transaction>,
+  ) {}
 
-  findAll(): Transaction[] {
-    return this.transactions;
+  async findAll(): Promise<Transaction[]> {
+    return await this.transactionRepository.find();
   }
 
-  findById(id: number): Transaction {
-    const transaction = this.transactions.find(
-      (transaction) => transaction.id === id,
-    );
+  async findById(id: number): Promise<Transaction> {
+    const transaction = await this.transactionRepository.findOne({
+      where: { id },
+    });
 
     if (!transaction) {
       throw new NotFoundException(transactionNotFound);
@@ -31,45 +27,54 @@ export class TransactionsService {
     return transaction;
   }
 
-  create({ description, value, category, type, date }): boolean {
-    const id = this.transactions.length + 1;
-
-    this.transactions.push({ id, description, value, category, type, date });
+  async create({ description, value, category, type, date }): Promise<boolean> {
+    const transaction = this.transactionRepository.create({
+      description,
+      value,
+      category,
+      type,
+      date,
+    });
+    await this.transactionRepository.save(transaction);
     return true;
   }
 
-  update({ id, description, value, category, type, date }): boolean {
-    const transactionIndex = this.transactions.findIndex(
-      (transaction) => transaction.id === id,
-    );
-
-    if (transactionIndex < 0) {
-      throw new NotFoundException(transactionNotFound);
-    }
-
-    this.transactions[transactionIndex] = {
+  async update({
+    id,
+    description,
+    value,
+    category,
+    type,
+    date,
+  }): Promise<boolean> {
+    const transaction = await this.transactionRepository.preload({
       id,
-      description:
-        description || this.transactions[transactionIndex].description,
-      value: value || this.transactions[transactionIndex].value,
-      category: category || this.transactions[transactionIndex].category,
-      type: type || this.transactions[transactionIndex].type,
-      date: date || this.transactions[transactionIndex].date,
-    };
+      description,
+      value,
+      category,
+      type,
+      date,
+    });
+
+    if (!transaction) {
+      throw new NotFoundException(transactionNotFound);
+    }
+
+    this.transactionRepository.save(transaction);
 
     return true;
   }
 
-  delete(id: number): boolean {
-    const transactionIndex = this.transactions.findIndex(
-      (transaction) => transaction.id === id,
-    );
+  async delete(id: number): Promise<boolean> {
+    const transaction = await this.transactionRepository.findOne({
+      where: { id },
+    });
 
-    if (transactionIndex < 0) {
+    if (!transaction) {
       throw new NotFoundException(transactionNotFound);
     }
 
-    this.transactions.splice(transactionIndex, 1);
+    await this.transactionRepository.remove(transaction);
     return true;
   }
 }

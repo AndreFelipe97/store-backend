@@ -17,25 +17,25 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Get()
-  index(): Promise<Product[]> {
-    const products = this.productsService.findAll();
+  async index(): Promise<Product[]> {
+    const products = await this.productsService.findAll();
 
     return products;
   }
 
   @Get(':id')
-  detail(@Param('id') id: number, @Res() response): Product {
-    const product = this.productsService.findById(id);
+  async detail(@Param('id') id: number): Promise<Product> {
+    const product = await this.productsService.findById(id);
 
-    return response.json(product);
+    return product;
   }
 
   @Post()
-  create(
+  async create(
     @Body() { description, brand, price, amount, barcode }: CreateProductsDto,
     @Res() response,
   ) {
-    this.productsService.create({
+    await this.productsService.create({
       description,
       brand,
       price,
@@ -47,12 +47,12 @@ export class ProductsController {
   }
 
   @Put(':id')
-  update(
+  async update(
     @Param('id') id: number,
     @Body() { description, brand, price, amount, barcode }: UpdateProductsDto,
     @Res() response,
   ) {
-    this.productsService.update({
+    await this.productsService.update({
       id,
       description,
       brand,
@@ -65,8 +65,8 @@ export class ProductsController {
   }
 
   @Delete(':id')
-  delete(@Param('id') id: number, @Res() response): string {
-    const productDeleted = this.productsService.delete(id);
+  async delete(@Param('id') id: number, @Res() response): Promise<string> {
+    const productDeleted = await this.productsService.delete(id);
 
     if (!productDeleted) {
       return response.status(404).json({ message: 'Product not deleted' });
