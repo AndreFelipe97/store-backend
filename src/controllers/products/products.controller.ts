@@ -66,11 +66,7 @@ export class ProductsController {
 
   @Delete(':id')
   async delete(@Param('id') id: number, @Res() response): Promise<string> {
-    const productDeleted = await this.productsService.delete(id);
-
-    if (!productDeleted) {
-      return response.status(404).json({ message: 'Product not deleted' });
-    }
+    await this.productsService.delete(id);
 
     return response.status(204).send();
   }
