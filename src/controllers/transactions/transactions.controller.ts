@@ -8,10 +8,12 @@ import {
   Put,
   Res,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { CreateTransactionsDto, UpdateTransactionsDto } from 'src/dtos/Dto';
 import { Transaction } from 'src/entities/transactions.entity';
 import { TransactionsService } from 'src/services/transactions/transactions.service';
 
+@ApiTags('transactions')
 @Controller('transactions')
 export class TransactionsController {
   constructor(private readonly transactionsServices: TransactionsService) {}

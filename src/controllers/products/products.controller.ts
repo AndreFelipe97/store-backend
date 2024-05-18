@@ -8,10 +8,12 @@ import {
   Put,
   Res,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { CreateProductsDto, UpdateProductsDto } from 'src/dtos/Dto';
 import { Product } from 'src/entities/products.entity';
 import { ProductsService } from 'src/services/products/products.service';
 
+@ApiTags('products')
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
