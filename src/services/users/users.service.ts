@@ -6,6 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/users.entity';
 import { Repository } from 'typeorm';
+import { hash } from 'bcryptjs';
 
 @Injectable()
 export class UsersService {
@@ -35,10 +36,12 @@ export class UsersService {
       throw new BadRequestException('User already exists');
     }
 
+    const hashedPassword = await hash(password, 8);
+
     const user = this.userRepository.create({
       name,
       email,
-      password,
+      password: hashedPassword,
     });
 
     await this.userRepository.save(user);
