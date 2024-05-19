@@ -7,12 +7,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/users.entity';
 import { Repository } from 'typeorm';
 import { hash } from 'bcryptjs';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly configService: ConfigService,
   ) {}
 
   async findAll(): Promise<User[]> {
@@ -29,6 +31,10 @@ export class UsersService {
     return { ...user };
   }
 
+  async findByEmail(email: string): Promise<User> {
+    return await this.userRepository.findOne({ where: { email } });
+  }
+
   async create({ name, email, password }): Promise<boolean> {
     const userExists = await this.userRepository.findOne({ where: { email } });
 
@@ -36,7 +42,10 @@ export class UsersService {
       throw new BadRequestException('User already exists');
     }
 
-    const hashedPassword = await hash(password, 8);
+    const hashedPassword = await hash(
+      password,
+      this.configService.get('BCRYPT_SALT'),
+    );
 
     const user = this.userRepository.create({
       name,
