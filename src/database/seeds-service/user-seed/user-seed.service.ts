@@ -6,6 +6,11 @@ export class UserSeedService {
   constructor(private readonly usersService: UsersService) {}
 
   async create() {
+    const userExist = await this.usersService.findByEmail('admin@gmail.com');
+    if (userExist) {
+      return;
+    }
+
     await this.usersService.create({
       name: 'Admin',
       email: 'admin@gmail.com',
