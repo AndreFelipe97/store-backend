@@ -59,11 +59,16 @@ export class UsersService {
   }
 
   async update({ id, name, email, password }): Promise<boolean> {
+    const hashedPassword = await hash(
+      password,
+      +this.configService.get('BCRYPT_SALT'),
+    );
+
     const user = await this.userRepository.preload({
       id,
       name,
       email,
-      password,
+      password: hashedPassword,
     });
 
     const emailExists = await this.userRepository.findOne({ where: { email } });
