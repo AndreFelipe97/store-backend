@@ -4,9 +4,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Product } from 'src/entities/products.entity';
 import { Transaction } from 'src/entities/transactions.entity';
 import { User } from 'src/entities/users.entity';
+import { SeedsModule } from './seeds/seeds.module';
+import { UserSeedService } from './seeds-service/user-seed/user-seed.service';
+import { UsersModule } from 'src/modules/users/users.module';
 
 @Module({
   imports: [
+    UsersModule,
     TypeOrmModule.forRootAsync({
       useFactory: async (configService: ConfigService) => {
         return {
@@ -22,6 +26,8 @@ import { User } from 'src/entities/users.entity';
       },
       inject: [ConfigService],
     }),
+    SeedsModule,
   ],
+  providers: [UserSeedService],
 })
 export class DatabaseModule {}

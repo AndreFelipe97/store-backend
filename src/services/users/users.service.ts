@@ -44,7 +44,7 @@ export class UsersService {
 
     const hashedPassword = await hash(
       password,
-      this.configService.get('BCRYPT_SALT'),
+      +this.configService.get('BCRYPT_SALT'),
     );
 
     const user = this.userRepository.create({
